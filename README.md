@@ -1,16 +1,66 @@
-# ASP.Net Core MVC Template
-This project is a template for creating a new ASP.Net Core MVC project with PostgreSQL database and MSTest project.
+# Experimentální repozitář pro koncept Teacher Control
 
-It has an Auth controller for handling user authentication and authorization. 
-There are two roles — Admin and User. Can be expanded in the UserModel file, which has the UserRole enum.
+Teacher Control má být webová aplikace, kde bude možno 
+hodnotit své učitele. Hodnocení by mělo být reprezentování jednou
+až pěti hvězdičkami a textem formou recenzí.
+---
 
-There is an admin area with a simple dashboard and user overview. Can be expanded for editing users, but 
-right now does not have any functionality besides viewing them.
+## Drbárna
 
-Secrets are managed via the .env file. An example of loading configuration from this file is in Program.cs, where it
-loads the connection string for the database.
+Další funkce této webové aplikace by měla být drbárna. Živý chat
+s možností poslat školní memes. Tyto memes by pravděpodobně 
+musely být omezeny a buď schvalovány moderátory, nebo čistě omezeny
+na selekci od moderátorů.
+---
 
-Users can view their own data, edit it, download their data in .json format as well as delete their account.
+## Abstence
+
+Pro zábavu by mohli studenti zapisovat pozdní příchody učitelů 
+na hodiny. Pozdní příchod by se zadával v minutách a učitelé
+by mohli dostávat odznáčky na základě jejich celkového času.
+
+S tím by mohl být nějak spojený "Nálada metr".
+
+---
+
+## Král/královna dne
+
+Bingo jako například [zde](http://kubicekm23.epsilon.spstrutnov.cz),
+kde ten, kdo by jako první dosáhl binga by se stal králem/královnou.
+Jak přesně by toto bingo mělo však fungovat není specifikováno.
+
+Můj nápad je, že by se to dělilo na učitele. Tam je ale problém,
+že by název král/královna moc neseděl. To je však jediný, který
+mě s touto cestou napadá.
+
+---
+
+## Hlasování pro učitele
+
+Hlasování registrovaných uživatelů pro učitele v různých kategoriích.
+Pár kategoriích, které mě napadají, jsou například *nejlepší hlášky*, 
+*nejsprostější* a *nejvíc sexy*.
+
+---
+
+## Celkové hodnocení učitelů
+
+Finální hodnocení učitele by mělo vycházet jak z výsledků
+hlasování, tak recenzí studentů a nedochvilnosti.
+
+---
+
+## Podmínky užívání webové aplikace
+
+Vše toto by muselo být pod jednou podmínkou. Existuje moderátor,
+který bude banovat uživatele za nevhodné zprávy a recenze. Recenze
+by však měli být anonymní, ale stále navázány na účet, aby mohl být
+zablokován.
+
+---
+
+*Následující text jsou instrukce a dokumentace, 
+která je součástí použitého template.*
 
 ## Project structure.
 
