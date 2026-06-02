@@ -54,4 +54,18 @@ public class UsersController : AdminBaseController
         TempData["SuccessMessage"] = "Roles updated successfully.";
         return RedirectToAction(nameof(Details), new { id });
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleBan(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound();
+
+        user.IsBanned = !user.IsBanned;
+        await _userManager.UpdateAsync(user);
+
+        TempData["SuccessMessage"] = user.IsBanned ? "User banned." : "User unbanned.";
+        return RedirectToAction(nameof(Index));
+    }
 }

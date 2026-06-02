@@ -56,7 +56,7 @@ public class Program
 
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            DataSeeder.SeedAsync(userManager, roleManager).GetAwaiter().GetResult();
+            DataSeeder.SeedAsync(userManager, roleManager, db).GetAwaiter().GetResult();
         }
 
         // Configure the HTTP request pipeline.
