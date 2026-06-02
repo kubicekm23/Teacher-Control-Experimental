@@ -1,0 +1,177 @@
+@model TeacherControlWeb.Entities.TeacherEntity
+
+@{
+    ViewData["Title"] = Model.FullName;
+    var avgRating = Model.Reviews.Any() ? Model.Reviews.Average(r => r.Rating) : 0;
+    var totalLateness = Model.Latenesses.Sum(l => l.Minutes);
+}
+
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Učitelé</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.FullName</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <h2 class="card-title">@Model.FullName</h2>
+                    <h5 class="text-muted">@Model.Subject</h5>
+                    <hr>
+                    <div class="display-4 text-warning mb-2">
+                        @avgRating.ToString("F1")
+                    </div>
+                    <div class="text-warning mb-3">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="bi @(i <= avgRating ? "bi-star-fill" : (i - 0.5 <= avgRating ? "bi-star-half" : "bi-star"))"></i>
+                        }
+                    </div>
+                    <p class="text-muted">Celkem @Model.Reviews.Count recenzí</p>
+                    
+                    <hr>
+                    <h6>Náladometr</h6>
+                    @{
+                        var recentReviews = Model.Reviews.OrderByDescending(r => r.CreatedAt).Take(5).ToList();
+                        var moodScore = recentReviews.Any() ? recentReviews.Average(r => r.Rating) : 3;
+                        var moodIcon = moodScore >= 4 ? "bi-emoji-laughing" : (moodScore >= 3 ? "bi-emoji-smile" : "bi-emoji-frown");
+                        var moodColor = moodScore >= 4 ? "text-success" : (moodScore >= 3 ? "text-warning" : "text-danger");
+                    }
+                    <div class="@moodColor display-6">
+                        <i class="bi @moodIcon"></i>
+                    </div>
+                    <small class="text-muted">Na základě posledních @recentReviews.Count recenzí</small>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>Pozdní příchody</h5>
+                </div>
+                <div class="card-body">
+                    <div class="display-5 text-center mb-2">@totalLateness min</div>
+                    <p class="text-center text-muted">Celkem naměřeno studenty</p>
+                    
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <hr>
+                        <h6>Nahlásit zpoždění</h6>
+                        <form asp-controller="Lateness" asp-action="Create" method="post">
+                            <input type="hidden" name="TeacherId" value="@Model.Id" />
+                            <div class="input-group">
+                                <input type="number" name="Minutes" class="form-control" placeholder="Minuty" min="1" max="60" required>
+                                <button type="submit" class="btn btn-outline-danger">Odeslat</button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-trophy me-2"></i>Hlasování</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        @{
+                            var categories = new[] { "Nejlepší hlášky", "Nejsprostější", "Nejvíc sexy" };
+                            foreach (var cat in categories)
+                            {
+                                var voteCount = Model.Votes.Count(v => v.Category == cat);
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @cat
+                                    <span class="badge bg-primary rounded-pill">@voteCount</span>
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <form asp-controller="Votes" asp-action="Create" method="post" class="ms-2">
+                                            <input type="hidden" name="TeacherId" value="@Model.Id" />
+                                            <input type="hidden" name="Category" value="@cat" />
+                                            <button type="submit" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus"></i></button>
+                                        </form>
+                                    }
+                                </li>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recenze studentů</h5>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="collapse" data-bs-target="#addReviewCollapse">Napsat recenzi</button>
+                    }
+                </div>
+                <div class="card-body">
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="collapse mb-4" id="addReviewCollapse">
+                            <div class="card card-body bg-light">
+                                <form asp-controller="Reviews" asp-action="Create" method="post">
+                                    <input type="hidden" name="TeacherId" value="@Model.Id" />
+                                    <div class="mb-3">
+                                        <label class="form-label">Hodnocení</label>
+                                        <select name="Rating" class="form-select" required>
+                                            <option value="5">5 - Výborný</option>
+                                            <option value="4">4 - Chvalitebný</option>
+                                            <option value="3">3 - Dobrý</option>
+                                            <option value="2">2 - Dostatečný</option>
+                                            <option value="1">1 - Nedostatečný</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Text recenze</label>
+                                        <textarea name="Content" class="form-control" rows="3" required></textarea>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" name="IsAnonymous" value="true" class="form-check-input" id="isAnon">
+                                        <label class="form-check-label" for="isAnon">Anonymně</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Odeslat</button>
+                                </form>
+                            </div>
+                            <hr>
+                        </div>
+                    }
+
+                    @if (!Model.Reviews.Any())
+                    {
+                        <p class="text-center text-muted my-5">Zatím žádné recenze. Buďte první!</p>
+                    }
+                    else
+                    {
+                        @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt))
+                        {
+                            <div class="mb-4 pb-4 border-bottom">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <span class="text-warning">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <i class="bi @(i <= review.Rating ? "bi-star-fill" : "bi-star")"></i>
+                                            }
+                                        </span>
+                                        <span class="ms-2 fw-bold">@(review.IsAnonymous ? "Anonymní student" : review.User?.UserName ?? "Uživatel")</span>
+                                    </div>
+                                    <small class="text-muted">@review.CreatedAt.ToString("d. M. yyyy")</small>
+                                </div>
+                                <p class="card-text">@review.Content</p>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+}

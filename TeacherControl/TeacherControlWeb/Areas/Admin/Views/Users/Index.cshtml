@@ -14,6 +14,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Roles</th>
+            <th>Status</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -31,7 +32,24 @@
                     }
                 </td>
                 <td>
-                    <a asp-action="Details" asp-route-id="@vm.UserEntity.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                    @if (vm.UserEntity.IsBanned)
+                    {
+                        <span class="badge bg-secondary">Banned</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                </td>
+                <td>
+                    <div class="btn-group">
+                        <a asp-action="Details" asp-route-id="@vm.UserEntity.Id" class="btn btn-sm btn-outline-primary">Details</a>
+                        <form asp-action="ToggleBan" asp-route-id="@vm.UserEntity.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-sm @(vm.UserEntity.IsBanned ? "btn-outline-success" : "btn-outline-danger")">
+                                @(vm.UserEntity.IsBanned ? "Unban" : "Ban")
+                            </button>
+                        </form>
+                    </div>
                 </td>
             </tr>
         }

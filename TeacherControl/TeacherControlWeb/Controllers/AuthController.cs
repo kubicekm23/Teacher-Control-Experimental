@@ -85,6 +85,12 @@ public class AuthController : Controller
             return View(model);
         }
 
+        if (user.IsBanned)
+        {
+            ModelState.AddModelError(string.Empty, "Váš účet byl zablokován.");
+            return View(model);
+        }
+
         var result = await _signInManager.PasswordSignInAsync(
             user, model.Password, model.RememberMe, lockoutOnFailure: false);
 
