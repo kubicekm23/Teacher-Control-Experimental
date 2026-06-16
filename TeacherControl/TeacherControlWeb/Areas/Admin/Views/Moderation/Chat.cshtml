@@ -1,0 +1,55 @@
+@model IEnumerable<TeacherControlWeb.Entities.ChatMessageEntity>
+@{
+    ViewData["Title"] = "Moderování chatu";
+}
+
+<h1 class="mb-4">Moderování chatu</h1>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>Datum</th>
+                    <th>Uživatel</th>
+                    <th>Typ</th>
+                    <th style="width: 50%;">Obsah</th>
+                    <th class="text-end">Akce</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var msg in Model)
+                {
+                    <tr>
+                        <td class="small">@msg.CreatedAt.ToString("g")</td>
+                        <td>@msg.User?.UserName</td>
+                        <td>
+                            <span class="badge @(msg.Type == TeacherControlWeb.Entities.ChatMessageType.Meme ? "bg-info" : "bg-primary")">
+                                @msg.Type
+                            </span>
+                        </td>
+                        <td>
+                            @if (msg.Type == TeacherControlWeb.Entities.ChatMessageType.Meme)
+                            {
+                                <a href="@msg.Content" target="_blank" class="small text-truncate d-inline-block" style="max-width: 300px;">@msg.Content</a>
+                            }
+                            else
+                            {
+                                <span class="small">@msg.Content</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <form asp-action="DeleteChatMessage" asp-route-id="@msg.Id" method="post" onsubmit="return confirm('Smazat tuto zprávu?')">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Smazat</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+}

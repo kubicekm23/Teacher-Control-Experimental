@@ -22,7 +22,7 @@
 <header>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow">
         <div class="container-fluid">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TemplateWeb <small class="text-muted">Admin</small></a>
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Teacher Control <small class="text-muted">Admin</small></a>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                 </ul>
@@ -48,9 +48,17 @@
                 <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
             </li>
             <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
-                <a asp-area="Admin" asp-controller="Users" asp-action="Index">Users</a>
+                <a asp-area="Admin" asp-controller="Users" asp-action="Index">Uživatelé</a>
             </li>
-            <!-- Add more models here easily -->
+            <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Teachers" ? "active" : "")">
+                <a asp-area="Admin" asp-controller="Teachers" asp-action="Index">Učitelé</a>
+            </li>
+            <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Reviews" ? "active" : "")">
+                <a asp-area="Admin" asp-controller="Moderation" asp-action="Reviews">Recenze</a>
+            </li>
+            <li class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Chat" ? "active" : "")">
+                <a asp-area="Admin" asp-controller="Moderation" asp-action="Chat">Chat</a>
+            </li>
         </ul>
     </nav>
 
