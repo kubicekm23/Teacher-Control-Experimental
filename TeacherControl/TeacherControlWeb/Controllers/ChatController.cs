@@ -21,16 +21,18 @@ public class ChatController : Controller
     {
         var messages = await _context.ChatMessages
             .Include(m => m.User)
+            .Include(m => m.Meme)
             .OrderByDescending(m => m.CreatedAt)
             .Take(100)
             .ToListAsync();
         
+        ViewBag.Memes = await _context.Memes.ToListAsync();
         return View(messages.OrderBy(m => m.CreatedAt).ToList());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Send(string content, ChatMessageType type = ChatMessageType.Text)
+    public async Task<IActionResult> Send(string content, Guid? memeId, ChatMessageType type = ChatMessageType.Text)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null) return Challenge();
@@ -38,10 +40,11 @@ public class ChatController : Controller
         var message = new ChatMessageEntity
         {
             UserId = userId,
-            Content = content,
-            Type = type,
+            Content = content ?? (memeId.HasValue ? "Meme" : ""),
+            Type = memeId.HasValue ? ChatMessageType.Meme : type,
+            MemeId = memeId,
             CreatedAt = DateTime.UtcNow,
-            IsApproved = type == ChatMessageType.Text // Auto-approve text, memes might need moderation
+            IsApproved = true
         };
 
         _context.ChatMessages.Add(message);

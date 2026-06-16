@@ -16,7 +16,10 @@ public class ChatMessageEntity
 
     public ChatMessageType Type { get; set; } = ChatMessageType.Text;
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public Guid? MemeId { get; set; }
+    public MemeEntity? Meme { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
 
     public bool IsApproved { get; set; } = true; // Default to true for text, maybe false for memes
 }

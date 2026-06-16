@@ -16,10 +16,18 @@ public class AppDbContext : IdentityDbContext<UserEntity>
     public DbSet<LatenessEntity> Latenesses { get; set; } = null!;
     public DbSet<VoteEntity> Votes { get; set; } = null!;
     public DbSet<ChatMessageEntity> ChatMessages { get; set; } = null!;
+    public DbSet<MemeEntity> Memes { get; set; } = null!;
+    public DbSet<BingoBoardEntity> BingoBoards { get; set; } = null!;
+    public DbSet<BingoTileEntity> BingoTiles { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+
+        builder.Entity<BingoTileEntity>()
+            .HasOne(t => t.Board)
+            .WithMany(b => b.Tiles)
+            .HasForeignKey(t => t.BoardId);
 
         builder.Entity<ReviewEntity>()
             .HasOne(r => r.Teacher)

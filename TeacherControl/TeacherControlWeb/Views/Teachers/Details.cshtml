@@ -1,8 +1,10 @@
 @model TeacherControlWeb.Entities.TeacherEntity
+@inject TeacherControlWeb.Services.ITeacherRatingService RatingService
 
 @{
     ViewData["Title"] = Model.FullName;
     var avgRating = Model.Reviews.Any() ? Model.Reviews.Average(r => r.Rating) : 0;
+    var experimentalScore = RatingService.CalculateExperimentalScore(Model);
     var totalLateness = Model.Latenesses.Sum(l => l.Minutes);
 }
 
@@ -21,17 +23,26 @@
                     <h2 class="card-title">@Model.FullName</h2>
                     <h5 class="text-muted">@Model.Subject</h5>
                     <hr>
-                    <div class="display-4 text-warning mb-2">
-                        @avgRating.ToString("F1")
+                    <div class="mb-3">
+                        <small class="text-uppercase text-muted fw-bold">Hvězdičkové hodnocení</small>
+                        <div class="display-4 text-warning mb-2">
+                            @avgRating.ToString("F1")
+                        </div>
+                        <div class="text-warning mb-1">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="bi @(i <= avgRating ? "bi-star-fill" : (i - 0.5 <= avgRating ? "bi-star-half" : "bi-star"))"></i>
+                            }
+                        </div>
+                        <p class="text-muted small">Celkem @Model.Reviews.Count recenzí</p>
                     </div>
-                    <div class="text-warning mb-3">
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            <i class="bi @(i <= avgRating ? "bi-star-fill" : (i - 0.5 <= avgRating ? "bi-star-half" : "bi-star"))"></i>
-                        }
-                    </div>
-                    <p class="text-muted">Celkem @Model.Reviews.Count recenzí</p>
                     
+                    <div class="bg-light p-3 rounded mb-3">
+                        <small class="text-uppercase text-muted fw-bold">Experimentální skóre</small>
+                        <div class="display-5 text-primary">@experimentalScore.ToString("F2")</div>
+                        <p class="small text-muted mb-0">Kombinace recenzí, dochvilnosti a hlasů</p>
+                    </div>
+
                     <hr>
                     <h6>Náladometr</h6>
                     @{

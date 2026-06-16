@@ -6,13 +6,30 @@
 <p>Welcome to the administration area.</p>
 
 <div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-header">Users</div>
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3 text-center">
             <div class="card-body">
-                <h5 class="card-title">Manage system users</h5>
-                <p class="card-text">View and edit user details.</p>
-                <a asp-controller="Users" asp-action="Index" class="btn btn-light">Go to Users</a>
+                <h5 class="card-title">Uživatelé</h5>
+                <h2 class="display-4">@ViewBag.UserCount</h2>
+                <a asp-controller="Users" asp-action="Index" class="btn btn-light btn-sm mt-2">Spravovat</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3 text-center">
+            <div class="card-body">
+                <h5 class="card-title">Učitelé</h5>
+                <h2 class="display-4">@ViewBag.TeacherCount</h2>
+                <a asp-controller="Teachers" asp-action="Index" class="btn btn-light btn-sm mt-2">Spravovat</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3 text-center">
+            <div class="card-body">
+                <h5 class="card-title">Memes</h5>
+                <h2 class="display-4">@ViewBag.MemeCount</h2>
+                <a asp-controller="Memes" asp-action="Index" class="btn btn-light btn-sm mt-2">Spravovat</a>
             </div>
         </div>
     </div>

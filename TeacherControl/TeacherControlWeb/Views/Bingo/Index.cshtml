@@ -1,0 +1,123 @@
+@model TeacherControlWeb.Entities.BingoBoardEntity
+
+@{
+    ViewData["Title"] = "Bingo - Král dne";
+}
+
+<div class="container mt-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4"><i class="bi bi-grid-3x3-gap-fill text-primary me-3"></i>Bingo - Král dne</h1>
+        <p class="lead text-muted">První, kdo zaplní řadu, sloupec nebo úhlopříčku, se stává králem dne!</p>
+        
+        @if (Model.IsWon)
+        {
+            <div class="alert alert-success d-inline-block">
+                <h4 class="alert-heading mb-0">
+                    <i class="bi bi-trophy-fill me-2"></i>
+                    Dnešním vítězem je: <strong>@(Model.Winner?.UserName ?? "Někdo")</strong>
+                </h4>
+            </div>
+        }
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="bingo-grid shadow-sm">
+                @foreach (var tile in Model.Tiles.OrderBy(t => t.Position))
+                {
+                    <div class="bingo-tile @(tile.IsTriggered ? "triggered" : "")">
+                        <div class="tile-content">
+                            @tile.Text
+                        </div>
+                        @if (!tile.IsTriggered && !Model.IsWon)
+                        {
+                            <form asp-action="Trigger" method="post" class="tile-trigger">
+                                <input type="hidden" name="tileId" value="@tile.Id" />
+                                <button type="submit" class="btn btn-sm btn-primary">To se stalo!</button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>Co se dnes stalo</h5>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Tiles.Any(t => t.IsTriggered))
+                    {
+                        <p class="text-center text-muted">Zatím se nic nestalo. Buďte první!</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var tile in Model.Tiles.Where(t => t.IsTriggered).OrderByDescending(t => t.Id))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @tile.Text
+                                    <span class="badge bg-success rounded-pill">OK</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bingo-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .bingo-tile {
+        aspect-ratio: 1;
+        background-color: white;
+        border: 2px solid #dee2e6;
+        border-radius: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        text-align: center;
+        position: relative;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+
+    .bingo-tile.triggered {
+        background-color: #d1e7dd;
+        border-color: #a3cfbb;
+        color: #0f5132;
+        font-weight: bold;
+    }
+
+    .tile-trigger {
+        position: absolute;
+        bottom: 5px;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .bingo-tile:hover .tile-trigger {
+        opacity: 1;
+    }
+
+    .bingo-tile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+</style>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+}

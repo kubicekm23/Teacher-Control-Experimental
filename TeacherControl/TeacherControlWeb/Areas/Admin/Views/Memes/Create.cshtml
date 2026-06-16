@@ -1,0 +1,100 @@
+@model TeacherControlWeb.Entities.MemeEntity
+
+@{
+    ViewData["Title"] = "Přidat Meme";
+    Layout = "_AdminLayout";
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Memes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Přidat</li>
+        </ol>
+    </nav>
+    <h1>Přidat Meme</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Název</label>
+                        <input asp-for="Name" class="form-control" placeholder="Např. Surprised Pikachu" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ImageUrl" class="form-label">URL obrázku</label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="https://..." id="urlInput" />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        <div id="urlHint" class="form-text">
+                            <strong>Důležité:</strong> Vkládejte přímý odkaz na obrázek (končící .jpg, .png, .gif). <br />
+                            U Tenoru klikněte pravým tlačítkem na GIF a zvolte "Kopírovat adresu obrázku".
+                        </div>
+                        <div id="urlWarning" class="alert alert-warning mt-2 d-none">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Tento odkaz vypadá jako odkaz na stránku, nikoliv na obrázek. Zkuste zkopírovat "Adresu obrázku".
+                        </div>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <label class="form-label d-block text-start">Náhled</label>
+                        <div class="p-3 border rounded bg-light" style="min-height: 100px; display: flex; align-items: center; justify-content: center;">
+                            <img id="preview" src="" class="img-fluid rounded d-none" style="max-height: 250px;">
+                            <span id="previewPlaceholder" class="text-muted small">Zde se zobrazí náhled po vložení platné URL</span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Zpět</a>
+                        <button type="submit" class="btn btn-primary">Uložit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const preview = document.getElementById('preview');
+        const previewPlaceholder = document.getElementById('previewPlaceholder');
+        const urlWarning = document.getElementById('urlWarning');
+        
+        urlInput.addEventListener('input', function() {
+            let value = this.value.trim();
+            
+            // Check if it's a known non-direct link (like tenor.com/view/...)
+            if (value.includes('tenor.com/view/') || (value && !value.match(/\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i) && !value.includes('media.tenor.com'))) {
+                urlWarning.classList.remove('d-none');
+            } else {
+                urlWarning.classList.add('d-none');
+            }
+
+            if (value) {
+                preview.src = value;
+                preview.classList.remove('d-none');
+                previewPlaceholder.classList.add('d-none');
+            } else {
+                preview.classList.add('d-none');
+                previewPlaceholder.classList.remove('d-none');
+            }
+        });
+
+        // Error handling for the preview image
+        preview.onerror = function() {
+            preview.classList.add('d-none');
+            previewPlaceholder.classList.remove('d-none');
+            previewPlaceholder.textContent = "Chyba: Obrázek nelze načíst. Ověřte URL.";
+            previewPlaceholder.classList.add('text-danger');
+        };
+
+        preview.onload = function() {
+            previewPlaceholder.classList.remove('text-danger');
+            previewPlaceholder.textContent = "Zde se zobrazí náhled po vložení platné URL";
+        };
+    </script>
+}

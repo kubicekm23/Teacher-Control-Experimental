@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TeacherControlWeb.Data;
 using TeacherControlWeb.Entities;
+using TeacherControlWeb.Services;
 
 namespace TeacherControlWeb;
 
@@ -10,6 +11,7 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         DotEnv.Load();
         var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,9 @@ public class Program
 
         builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString));
+
+        builder.Services.AddScoped<IBingoService, BingoService>();
+        builder.Services.AddScoped<ITeacherRatingService, TeacherRatingService>();
 
         builder.Services.AddControllersWithViews();
 
